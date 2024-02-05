@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
+// Import necessary modules and types from external files
 import { ErrorRequestHandler } from 'express'
 import { ZodError } from 'zod'
 import config from '../config'
@@ -10,8 +11,11 @@ import handleValidationError from '../errors/handleValidationError'
 import handleZodError from '../errors/handleZodError'
 import { TErrorSources } from '../interface/error'
 
+// Define a global error handler middleware for Express
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  //setting default values
+  // console.log(err.statusCode);
+
+  // Setting default values for error response
   let statusCode = 500
   let message = 'Something went wrong!'
   let errorSources: TErrorSources = [
@@ -21,6 +25,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     },
   ]
 
+  // Check the type of error and handle accordingly
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err)
     statusCode = simplifiedError?.statusCode
@@ -42,6 +47,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message = simplifiedError?.message
     errorSources = simplifiedError?.errorSources
   } else if (err instanceof AppError) {
+    // Handle custom AppError
     statusCode = err?.statusCode
     message = err.message
     errorSources = [
@@ -51,6 +57,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
       },
     ]
   } else if (err instanceof Error) {
+    // Handle generic Error
     message = err.message
     errorSources = [
       {
@@ -60,19 +67,20 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     ]
   }
 
-  //ultimate return
+  // Return a JSON response with the error information
   return res.status(statusCode).json({
     success: false,
     message,
     errorSources,
     err,
-    stack: config.node_env === 'development' ? err?.stack : null,
+    stack: config.NODE_ENV === 'development' ? err?.stack : null,
   })
 }
 
+// Export the global error handler middleware for use in other modules
 export default globalErrorHandler
 
-//pattern
+// Commented pattern for the expected structure of the error response
 /*
 success
 message

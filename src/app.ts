@@ -1,28 +1,35 @@
-// ====== app.ts ======
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import cookieParser from 'cookie-parser';
 import cors from 'cors'
 import express, { Application, Request, Response } from 'express'
-import globalErrorHandler from './app/middlewares/globalErrorHandler'
-import notFound from './app/middlewares/notFound'
+import globalErrorHandler from './app/middleweres/globalErrorHandler'
+import notFound from './app/middleweres/notFound'
 import router from './app/routes'
+// import globalErrorHandler from './app/middlewares/globalErrorhandler';
+// import notFound from './app/middlewares/notFound';
+// import router from './app/routes';
 
 const app: Application = express()
 
-// parser
+//parsers
 app.use(express.json())
-app.use(cors())
+// app.use(cookieParser());
+
+app.use(cors({ origin: ['http://localhost:5173'], credentials: true }))
 
 // application routes
 app.use('/api/v1', router)
 
-// default route
 app.get('/', (req: Request, res: Response) => {
-  res.json('As-salamu alaykum!')
+  res.send('السلام عليكم ورحمة الله')
 })
 
-// Global error handler
 app.use(globalErrorHandler)
 
-// 404 error handler
+//Not Found
 app.use(notFound)
 
 export default app
