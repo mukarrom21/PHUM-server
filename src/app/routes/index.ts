@@ -1,5 +1,6 @@
 // Import necessary modules and types from external files
 import { Router } from 'express'
+import { StudentRoutes } from '../modules/Student/student.route'
 import { UserRoutes } from '../modules/User/user.route'
 // import { AuthRoutes } from '../modules/Auth/auth.route'
 // import { UserRoutes } from '../modules/User/user.route'
@@ -17,6 +18,10 @@ const moduleRoutes: IModuleRoute[] = [
   {
     path: '/users',
     route: UserRoutes,
+  },
+  {
+    path: '/students',
+    route: StudentRoutes,
   },
   //   {
   //     path: '/auth',

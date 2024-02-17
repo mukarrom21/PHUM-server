@@ -1,13 +1,15 @@
-import { IUser } from './user.interface'
-import { UserModel } from './user.model'
+import { TUser } from './user.interface'
+import { User } from './user.model'
 
-const createNewUserService = async (payload: Partial<IUser>) => {
-  const result = await UserModel.create(payload)
+const createStudentIntoDB = async studentData => {}
+
+const createNewUserService = async (payload: Partial<TUser>) => {
+  const result = await User.create(payload)
   return result
 }
 
 const findMultipleUsersService = async () => {
-  const result = await UserModel.find()
+  const result = await User.find()
   return result
 }
 
@@ -18,6 +20,7 @@ const updateMultipleUsersService = async () => {}
 const deleteMultipleUsersService = async () => {}
 
 export const UserServices = {
+  createStudentIntoDB,
   createNewUserService,
   findMultipleUsersService,
   findSingleUserService,

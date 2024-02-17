@@ -1,50 +1,38 @@
 import { Schema, model } from 'mongoose'
-import { USER_ROLE } from './user.constant'
-import { IUser } from './user.interface'
+import { USER_ROLE, USER_STATUS } from './user.constant'
+import { TUser } from './user.interface'
 
 // Define a Mongoose schema for the User model
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<TUser>(
   {
-    // User's name
-    name: {
+    id: {
       type: String,
+      required: true,
     },
-
-    // User's email address
-    email: {
+    // password
+    password: {
       type: String,
-      unique: true,
+      required: true,
     },
-
-    // User's password
-    password: String,
-
     // Flag indicating whether the user needs to change their password
     needsPasswordChange: {
       type: Boolean,
       default: true,
     },
-
-    // Date when the user last changed their password
-    //   passwordChangedAt: Date,
-
     // User's role, restricted to predefined roles in USER_ROLE constant
     role: {
       type: String,
       enum: {
         values: Object.values(USER_ROLE),
-        message: 'Invalid role type',
+        message: '{VALUE} is not a valid role!',
       },
-      default: 'user',
     },
-
     // User's status, limited to 'active' or 'blocked'
     status: {
       type: String,
-      enum: ['active', 'blocked'],
-      default: 'active',
+      enum: Object.values(USER_STATUS),
+      default: 'in-progress',
     },
-
     // Flag indicating whether the user is deleted
     isDeleted: {
       type: Boolean,
@@ -57,4 +45,4 @@ const userSchema = new Schema<IUser>(
 )
 
 // Create a Mongoose model for the User using the defined schema
-export const UserModel = model<IUser>('User', userSchema)
+export const User = model<TUser>('User', userSchema)

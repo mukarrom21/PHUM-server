@@ -1,10 +1,9 @@
-export interface IUser {
-  name: string
-  email: string
+export type TUser = {
+  id: string
   password: string
   needsPasswordChange: boolean
   passwordChangedAt?: Date
-  role: 'superAdmin' | 'admin' | 'moderator' | 'user'
-  status: 'active' | 'blocked'
+  role: 'admin' | 'student' | 'faculty'
+  status: 'in-progress' | 'blocked'
   isDeleted: boolean
 }

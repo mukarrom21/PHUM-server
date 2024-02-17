@@ -3,23 +3,12 @@ import { z } from 'zod'
 
 // Validation schema for user data
 const userValidationSchema = z.object({
-  body: z.object({
-    name: z.string({
-      required_error: 'Name is required',
-      invalid_type_error: 'Name must be string',
-    }),
-    email: z.string({
-      required_error: 'Email is required',
-      invalid_type_error: 'Email must be a string',
-    }),
-    password: z
-      .string({
-        invalid_type_error: 'Password must be a string',
-      })
-      .min(6, { message: 'Password cannot be less than 6 characters' })
-      .max(20, { message: 'Password cannot be more than 20 characters' })
-      .optional(),
-  }),
+  password: z
+    .string({
+      invalid_type_error: 'Password must be string',
+    })
+    .min(6, { message: 'Password must be minimum 6 characters' })
+    .optional(),
 })
 
 // // Validation schema for changing user status
