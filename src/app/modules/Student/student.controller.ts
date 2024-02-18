@@ -5,18 +5,18 @@ import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import { StudentServices } from './student.service'
 
-const createNewStudentController = catchAsync(
-  async (req: Request, res: Response) => {
-    const { student: studentData } = req.body
-    const result = await StudentServices.createNewStudentService(studentData)
-    sendResponse(res, {
-      statusCode: httpStatus.CREATED,
-      success: true,
-      message: 'Student create successfully',
-      data: result,
-    })
-  },
-)
+// const createNewStudentController = catchAsync(
+//   async (req: Request, res: Response) => {
+//     const { student: studentData } = req.body
+//     const result = await StudentServices.createNewStudentService(studentData)
+//     sendResponse(res, {
+//       statusCode: httpStatus.CREATED,
+//       success: true,
+//       message: 'Student create successfully',
+//       data: result,
+//     })
+//   },
+// )
 
 const getAllStudentsController = catchAsync(
   async (req: Request, res: Response) => {
@@ -96,7 +96,7 @@ const aggregateController = catchAsync(async (req: Request, res: Response) => {
 })
 
 export const StudentControllers = {
-  createNewStudentController,
+  // createNewStudentController,
   getAllStudentsController,
   getSingleStudentController,
   updateSingleStudentController,

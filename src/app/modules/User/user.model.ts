@@ -1,4 +1,6 @@
+import bcrypt from 'bcrypt'
 import { Schema, model } from 'mongoose'
+import config from '../../config'
 import { USER_ROLE, USER_STATUS } from './user.constant'
 import { TUser } from './user.interface'
 
@@ -8,6 +10,7 @@ const userSchema = new Schema<TUser>(
     id: {
       type: String,
       required: true,
+      unique: true,
     },
     // password
     password: {
@@ -44,5 +47,13 @@ const userSchema = new Schema<TUser>(
   },
 )
 
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_round),
+  )
+  next()
+})
+
 // Create a Mongoose model for the User using the defined schema
-export const User = model<TUser>('User', userSchema)
+export const UserModel = model<TUser>('User', userSchema)

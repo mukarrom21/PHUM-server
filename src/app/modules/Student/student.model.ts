@@ -1,6 +1,4 @@
-import bcrypt from 'bcrypt'
 import { Schema, model } from 'mongoose'
-import config from '../../config'
 import {
   IStudentModel,
   TGuardian,
@@ -70,57 +68,29 @@ const localGuardianSchema = new Schema<TLocalGuardian>(
 
 const studentSchema = new Schema<TStudent, IStudentModel>(
   {
-    id: {
-      type: String,
+    id: { type: String, unique: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User id is required'],
       unique: true,
+      ref: 'user',
     },
-    password: {
-      type: String,
-      select: 0,
-    },
-    name: {
-      type: userNameSchema,
-      required: true,
-    },
+    name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ['male', 'female'] }, // literal type
-    dateOfBirth: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
-    contactNo: {
-      type: String,
-    },
-    emergencyContactNo: {
-      type: String,
-    },
+    dateOfBirth: { type: String },
+    email: { type: String },
+    contactNo: { type: String },
+    emergencyContactNo: { type: String },
     bloodGroup: {
       type: String,
-      enum: {
-        values: ['A+', 'AB+', 'B+', 'O+', 'A-', 'AB-', 'B-', 'O-'],
-      },
+      enum: { values: ['A+', 'AB+', 'B+', 'O+', 'A-', 'AB-', 'B-', 'O-'] },
     },
-    presentAddress: {
-      type: String,
-    },
-    permanentAddress: {
-      type: String,
-    },
+    presentAddress: { type: String },
+    permanentAddress: { type: String },
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
-    profileImg: {
-      type: String,
-    },
-    isActive: {
-      type: String,
-      enum: ['active', 'blocked'],
-      default: 'active',
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+    profileImg: { type: String },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -135,15 +105,15 @@ studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
 })
 
-// pre middleware/hook to hash password
-studentSchema.pre('save', async function (next) {
-  // hash password before saving
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  )
-  next()
-})
+// // pre middleware/hook to hash password
+// studentSchema.pre('save', async function (next) {
+//   // hash password before saving
+//   this.password = await bcrypt.hash(
+//     this.password,
+//     Number(config.bcrypt_salt_round),
+//   )
+//   next()
+// })
 
 // pre middleware -> prevent deleted documents from find
 studentSchema.pre('find', async function (next) {
@@ -164,11 +134,11 @@ studentSchema.pre('aggregate', function (next) {
 })
 
 // Mongoose custom static method
-studentSchema.statics.isUserExists = async function (id: string) {
-  // find student data by student id
-  const existingStudentData = await StudentModel.findOne({ id })
-  return existingStudentData
-}
+// studentSchema.statics.isUserExists = async function (id: string) {
+//   // find student data by student id
+//   const existingStudentData = await StudentModel.findOne({ id })
+//   return existingStudentData
+// }
 
 // Mongoose custom instance method
 // studentSchema.methods.isUserExists = async function (id: string) {

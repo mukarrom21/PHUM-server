@@ -1,15 +1,44 @@
+import config from '../../config'
+import { TStudent } from '../Student/student.interface'
+import { StudentModel } from '../Student/student.model'
+import { USER_ROLE } from './user.constant'
 import { TUser } from './user.interface'
-import { User } from './user.model'
+import { UserModel } from './user.model'
 
-const createStudentIntoDB = async studentData => {}
+//-- Service to create new student
+const createNewStudentService = async (
+  password: string,
+  studentData: TStudent,
+) => {
+  // create user object
+  const userData: Partial<TUser> = {}
 
-const createNewUserService = async (payload: Partial<TUser>) => {
-  const result = await User.create(payload)
+  // set given password or default password
+  userData.password = password || (config.default_password as string)
+
+  // set student role
+  userData.role = USER_ROLE.student
+
+  // set manually id
+  userData.id = '2030110002'
+
+  // create a user
+  const user = await UserModel.create(userData)
+
+  // create a student
+  if (Object.keys(user).length) {
+    // set id, _id as user
+    studentData.id = user.id
+    studentData.user = user._id
+  }
+
+  const result = await StudentModel.create(studentData)
+
   return result
 }
 
 const findMultipleUsersService = async () => {
-  const result = await User.find()
+  const result = await UserModel.find()
   return result
 }
 
@@ -20,8 +49,7 @@ const updateMultipleUsersService = async () => {}
 const deleteMultipleUsersService = async () => {}
 
 export const UserServices = {
-  createStudentIntoDB,
-  createNewUserService,
+  createNewStudentService,
   findMultipleUsersService,
   findSingleUserService,
   updateSingleUserService,

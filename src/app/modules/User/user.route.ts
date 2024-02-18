@@ -6,9 +6,9 @@ import { UserValidation } from './user.validation'
 const router = Router()
 
 router.post(
-  '/create',
+  '/create-student',
   validateRequest(UserValidation.userValidationSchema),
-  UserControllers.createNewUserController,
+  UserControllers.createNewStudentController,
 )
 
 router.get('/', UserControllers.getMultipleUsersController)

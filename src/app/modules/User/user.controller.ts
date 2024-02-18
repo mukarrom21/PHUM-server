@@ -3,12 +3,13 @@ import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import { UserServices } from './user.service'
 
-const createNewUserController = catchAsync(async (req, res) => {
-  const result = await UserServices.createNewUserService(req.body)
+const createNewStudentController = catchAsync(async (req, res) => {
+  const { password, student } = req.body
+  const result = await UserServices.createNewStudentService(password, student)
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'User created successfully',
+    message: 'Student create successfully',
     data: result,
   })
 })
@@ -74,7 +75,7 @@ const updateMultipleUsersController = catchAsync(async (req, res) => {
 })
 
 export const UserControllers = {
-  createNewUserController,
+  createNewStudentController,
   getMultipleUsersController,
   getSingleUserController,
   updateSingleUserController,
