@@ -1,5 +1,7 @@
 import { Router } from 'express'
+import validateRequest from '../../middleweres/validateRequest'
 import { StudentControllers } from './student.controller'
+import { StudentValidations } from './student.validation'
 
 const router = Router()
 
@@ -11,7 +13,11 @@ const router = Router()
 router.get('/aggregate', StudentControllers.aggregateController)
 router.get('/', StudentControllers.getAllStudentsController)
 router.get('/:studentId', StudentControllers.getSingleStudentController)
-router.patch('/:studentId', StudentControllers.updateSingleStudentController)
+router.patch(
+  '/:studentId',
+  validateRequest(StudentValidations.updateStudentValidationSchema),
+  StudentControllers.updateSingleStudentController,
+)
 router.delete('/:studentId', StudentControllers.deleteSingleStudentController)
 
 export const StudentRoutes = router

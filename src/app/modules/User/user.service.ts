@@ -1,15 +1,18 @@
+import httpStatus from 'http-status'
+import mongoose from 'mongoose'
 import config from '../../config'
+import AppError from '../../errors/AppError'
+import { TAcademicSemester } from '../AcademicSemester/academicSemester.interface'
+import { AcademicSemesterModel } from '../AcademicSemester/academicSemester.model'
 import { TStudent } from '../Student/student.interface'
 import { StudentModel } from '../Student/student.model'
 import { USER_ROLE } from './user.constant'
 import { TUser } from './user.interface'
 import { UserModel } from './user.model'
+import { generateStudentId } from './user.utils'
 
-//-- Service to create new student
-const createNewStudentService = async (
-  password: string,
-  studentData: TStudent,
-) => {
+// service to create new student
+const createNewStudentService = async (password: string, payload: TStudent) => {
   // create user object
   const userData: Partial<TUser> = {}
 
@@ -19,22 +22,58 @@ const createNewStudentService = async (
   // set student role
   userData.role = USER_ROLE.student
 
-  // set manually id
-  userData.id = '2030110002'
+  // To generate student id find academic semester by id for semester year and code
+  const academicSemester = await AcademicSemesterModel.findById(
+    payload.admissionSemester,
+  )
 
-  // create a user
-  const user = await UserModel.create(userData)
+  // --------start transaction and rollback-------
+  // start session
+  const session = await mongoose.startSession()
 
-  // create a student
-  if (Object.keys(user).length) {
+  try {
+    session.startTransaction() // start transaction
+
+    // set generated student id
+    userData.id = await generateStudentId(academicSemester as TAcademicSemester)
+
+    // create a user -> transaction : 1
+    const newUser = await UserModel.create([userData], { session }) // array
+
+    // if can not create user throw error
+    if (!newUser.length) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Sorry, Failed to create new user!',
+      )
+    }
+
+    // create a student -> transaction : 2
     // set id, _id as user
-    studentData.id = user.id
-    studentData.user = user._id
+    payload.id = newUser[0].id
+    payload.user = newUser[0]._id
+
+    const newStudent = await StudentModel.create([payload], { session })
+
+    // if can not create student throw error
+    if (!newStudent.length) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Sorry, Failed to create new student!',
+      )
+    }
+
+    // If data created success commit session transaction and end the session
+    await session.commitTransaction()
+    await session.endSession()
+
+    // return
+    return newStudent
+  } catch (err: any) {
+    await session.abortTransaction()
+    await session.endSession()
+    throw new Error(err)
   }
-
-  const result = await StudentModel.create(studentData)
-
-  return result
 }
 
 const findMultipleUsersService = async () => {

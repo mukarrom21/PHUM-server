@@ -3,7 +3,6 @@ import { Server } from 'http'
 import mongoose from 'mongoose'
 import app from './app'
 import config from './app/config'
-// import seedSuperAdmin from './app/DB';
 
 // Declare a variable to hold the server instance
 let server: Server
@@ -12,7 +11,8 @@ let server: Server
 async function main() {
   try {
     // Connect to the MongoDB database using the provided URL from the configuration
-    await mongoose.connect(config.db_url as string)
+    // await mongoose.connect('mongodb://127.0.0.1:27017/PH-university-management')
+    await mongoose.connect(config.db_url_atlas as string)
 
     // the following line if seeding a super admin is required
     // seedSuperAdmin();

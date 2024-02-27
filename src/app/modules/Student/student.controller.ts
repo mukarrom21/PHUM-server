@@ -5,22 +5,11 @@ import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import { StudentServices } from './student.service'
 
-// const createNewStudentController = catchAsync(
-//   async (req: Request, res: Response) => {
-//     const { student: studentData } = req.body
-//     const result = await StudentServices.createNewStudentService(studentData)
-//     sendResponse(res, {
-//       statusCode: httpStatus.CREATED,
-//       success: true,
-//       message: 'Student create successfully',
-//       data: result,
-//     })
-//   },
-// )
-
 const getAllStudentsController = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await StudentServices.getAllStudentsService()
+    // get query
+    const query = req.query
+    const result = await StudentServices.getAllStudentsService(query)
     // check is data exist or not found
     if (!result) {
       throw new AppError(httpStatus.NOT_FOUND, 'sorry, data not found')
@@ -55,12 +44,13 @@ const getSingleStudentController = catchAsync(
 //-- controller to update single student
 const updateSingleStudentController = catchAsync(
   async (req: Request, res: Response) => {
+    // get student id from params
     const id = req.params.studentId
-    const studentData = req.body
-    const result = await StudentServices.updateSingleStudentService(
-      id,
-      studentData,
-    )
+    // get student data from body
+    const { student } = req.body
+    // call update service
+    const result = await StudentServices.updateSingleStudentService(id, student)
+    // send response
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

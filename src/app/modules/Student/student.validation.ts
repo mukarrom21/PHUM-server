@@ -62,7 +62,7 @@ const LocalGuardianSchema = z.object({
 })
 
 // Define schema for student
-const StudentValidationSchema = z.object({
+const createStudentValidationSchema = z.object({
   body: z.object({
     student: z.object({
       id: z.string({
@@ -114,6 +114,87 @@ const StudentValidationSchema = z.object({
         })
         .url()
         .optional(),
+      admissionSemester: z.string({
+        required_error: 'Academic semester _id is required for referencing',
+        invalid_type_error:
+          'admission semester must be mongodb object id as string',
+      }),
+      academicDepartment: z.string({
+        required_error: 'Academic department _id is required for referencing',
+        invalid_type_error:
+          'academic semester must be mongodb object id as string',
+      }),
+      isActive: z.enum(['active', 'blocked']).optional(),
+      isDeleted: z.boolean().optional(),
+    }),
+  }),
+})
+
+// Define schema for student
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+      id: z
+        .string({
+          invalid_type_error: 'Student ID must be a string',
+        })
+        .optional(),
+      name: UserNameSchema.partial().optional(),
+      gender: z.enum(['male', 'female']).optional(),
+      dateOfBirth: z
+        .string({
+          invalid_type_error: 'Date of birth must be a string',
+        })
+        .optional(),
+      email: z
+        .string({
+          invalid_type_error: 'Email must be a valid email address',
+        })
+        .email()
+        .optional(),
+      contactNo: z
+        .string({
+          invalid_type_error: 'Contact number must be a string',
+        })
+        .optional(),
+      emergencyContactNo: z
+        .string({
+          invalid_type_error: 'Emergency contact number must be a string',
+        })
+        .optional(),
+      bloodGroup: z
+        .enum(['A+', 'AB+', 'B+', 'O+', 'A-', 'AB-', 'B-', 'O-'])
+        .optional(),
+      presentAddress: z
+        .string({
+          invalid_type_error: 'Present address must be a string',
+        })
+        .optional(),
+      permanentAddress: z
+        .string({
+          invalid_type_error: 'Permanent address must be a string',
+        })
+        .optional(),
+      guardian: GuardianSchema.partial().optional(),
+      localGuardian: LocalGuardianSchema.partial().optional(),
+      profileImg: z
+        .string({
+          invalid_type_error: 'Profile image URL must be a valid URL',
+        })
+        .url()
+        .optional(),
+      admissionSemester: z
+        .string({
+          invalid_type_error:
+            'admission semester must be mongodb object id as string',
+        })
+        .optional(),
+      academicDepartment: z
+        .string({
+          invalid_type_error:
+            'academic semester must be mongodb object id as string',
+        })
+        .optional(),
       isActive: z.enum(['active', 'blocked']).optional(),
       isDeleted: z.boolean().optional(),
     }),
@@ -121,5 +202,6 @@ const StudentValidationSchema = z.object({
 })
 
 export const StudentValidations = {
-  StudentValidationSchema,
+  StudentValidationSchema: createStudentValidationSchema,
+  updateStudentValidationSchema,
 }

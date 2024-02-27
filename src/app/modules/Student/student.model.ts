@@ -78,7 +78,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
     name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ['male', 'female'] }, // literal type
     dateOfBirth: { type: String },
-    email: { type: String },
+    email: { type: String, unique: true },
     contactNo: { type: String },
     emergencyContactNo: { type: String },
     bloodGroup: {
@@ -90,6 +90,14 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
     profileImg: { type: String },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'Academic-semester', // collection name
+    },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'Academic-department', // collection name
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {
@@ -123,6 +131,12 @@ studentSchema.pre('find', async function (next) {
 
 // pre middleware -> prevent deleted documents from findOne
 studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } })
+  next()
+})
+
+// pre middleware -> prevent deleted documents from findOneAndUpdate
+studentSchema.pre('findOneAndUpdate', function (next) {
   this.find({ isDeleted: { $ne: true } })
   next()
 })

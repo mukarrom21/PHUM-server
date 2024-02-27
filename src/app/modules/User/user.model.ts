@@ -16,6 +16,7 @@ const userSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     // Flag indicating whether the user needs to change their password
     needsPasswordChange: {
