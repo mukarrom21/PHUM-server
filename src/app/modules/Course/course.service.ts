@@ -2,8 +2,8 @@ import httpStatus from 'http-status'
 import mongoose from 'mongoose'
 import QueryBuilder from '../../builder/QueryBuilder'
 import AppError from '../../errors/AppError'
-import { TCourse } from './course.interface'
-import { CourseModel } from './course.model'
+import { TCourse, TCourseFaculties } from './course.interface'
+import { CourseFacultiesModel, CourseModel } from './course.model'
 
 // service to create new course
 const createNewCourseService = async (payload: TCourse) => {
@@ -144,10 +144,38 @@ const deleteCourseService = async (id: string) => {
   return result
 }
 
+// service to add new  course faculties
+const assignFacultiesIntoCourseService = async (
+  id: string,
+  payload: Partial<TCourseFaculties>,
+) => {
+  const result = await CourseFacultiesModel.findByIdAndUpdate(
+    id,
+    { course: id, $addToSet: { faculties: { $each: payload } } },
+    { upsert: true, new: true },
+  )
+  return result
+}
+
+// service to remove faculties from course
+const removeFacultiesFromCourseService = async (
+  id: string,
+  payload: Partial<TCourseFaculties>,
+) => {
+  const result = await CourseFacultiesModel.findByIdAndUpdate(
+    id,
+    { $pull: { faculties: { $in: payload } } },
+    { new: true },
+  )
+  return result
+}
+
 export const CourseServices = {
   createNewCourseService,
   findAllCoursesService,
   findSingleCourseService,
   updateCourseService,
   deleteCourseService,
+  assignFacultiesIntoCourseService,
+  removeFacultiesFromCourseService,
 }

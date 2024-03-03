@@ -31,7 +31,14 @@ const createCourseValidationSchema = z.object({
 
 const updateCourseValidationSchema = courseValidationSchema.partial()
 
+const assignCourseFacultiesValidationSchema = z.object({
+  body: z.object({
+    faculties: z.array(z.string({})),
+  }),
+})
+
 export const CourseValidations = {
   createCourseValidationSchema,
   updateCourseValidationSchema,
+  assignCourseFacultiesValidationSchema,
 }
