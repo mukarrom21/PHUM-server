@@ -75,6 +75,11 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
       unique: true,
       ref: 'user',
     },
+    role: {
+      type: String,
+      enum: ['student', 'faculty', 'admin'],
+      default: 'student',
+    },
     name: { type: userNameSchema, required: true },
     gender: { type: String, enum: ['male', 'female'] }, // literal type
     dateOfBirth: { type: String },
@@ -110,7 +115,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
 
 // mongoose virtual
 studentSchema.virtual('fullName').get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`
 })
 
 // // pre middleware/hook to hash password

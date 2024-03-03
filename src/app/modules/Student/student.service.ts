@@ -1,7 +1,9 @@
 import httpStatus from 'http-status'
 import mongoose from 'mongoose'
+import QueryBuilder from '../../builder/QueryBuilder'
 import AppError from '../../errors/AppError'
 import { UserModel } from '../User/user.model'
+import { studentSearchableFields } from './student.constant'
 import { TStudent } from './student.interface'
 import { StudentModel } from './student.model'
 
@@ -18,8 +20,8 @@ import { StudentModel } from './student.model'
 //   return result
 // }
 
-//-- service to get all students
-const getAllStudentsService = async (query: Record<string, unknown>) => {
+//-- service to get all students with row code for dynamic queries
+/* const getAllStudentsService = async (query: Record<string, unknown>) => {
   // console.log(query) // { searchTerm: 'a' }
   const filterQueries = { ...query }
   // define exclude queries to exclude properties from filterQueries
@@ -40,9 +42,7 @@ const getAllStudentsService = async (query: Record<string, unknown>) => {
     'guardian.motherName',
   ]
 
-  /**
-   * @search_query : partial match
-   */
+  // @search_query : partial match
   let searchTerm = ''
   if (query.searchTerm) {
     searchTerm = query.searchTerm as string
@@ -82,16 +82,41 @@ const getAllStudentsService = async (query: Record<string, unknown>) => {
   const paginateQuery = sortQuery.skip(skip).limit(limit)
 
   // ---------Field limiting---------------
-  let fields = '-__v'
+  let fields = '-__v '
   if (query?.fields) {
     fields = (query?.fields as string).split(',').join(' ')
   }
-  console.log(fields)
+  console.log({ fields })
   const fieldsQuery = await paginateQuery.select(fields)
 
   return fieldsQuery
-}
+} */
 
+//-- service to get all students with query builder
+const getAllStudentsService = async (query: Record<string, unknown>) => {
+  // create instance of QueryBuilder class with all methods
+  const studentQuery = new QueryBuilder(
+    StudentModel.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+
+  // use modelQuery and resolve
+  const result = await studentQuery.modelQuery
+
+  return result
+}
 //-- service to get single student by student-id
 const getSingleStudentService = async (id: string) => {
   const result = await StudentModel.findOne({ id })

@@ -10,6 +10,16 @@ router.post(
   validateRequest(UserValidation.userValidationSchema),
   UserControllers.createNewStudentController,
 )
+router.post(
+  '/create-faculty',
+  validateRequest(UserValidation.userValidationSchema),
+  UserControllers.createNewFacultyController,
+)
+router.post(
+  '/create-admin',
+  validateRequest(UserValidation.userValidationSchema),
+  UserControllers.createNewAdminController,
+)
 
 router.get('/', UserControllers.getMultipleUsersController)
 
