@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt'
 import { Schema, model } from 'mongoose'
 import config from '../../config'
 import { USER_ROLE, USER_STATUS } from './user.constant'
-import { TUser } from './user.interface'
+import { IUserModel, TUser } from './user.interface'
 
 // Define a Mongoose schema for the User model
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, IUserModel>(
   {
     id: {
       type: String,
@@ -22,6 +22,9 @@ const userSchema = new Schema<TUser>(
     needsPasswordChange: {
       type: Boolean,
       default: true,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
     // User's role, restricted to predefined roles in USER_ROLE constant
     role: {
@@ -48,6 +51,30 @@ const userSchema = new Schema<TUser>(
   },
 )
 
+// static method to check is user exists with user id
+userSchema.statics.isUserExists = async function (id: string) {
+  return await UserModel.findOne({ id }).select('+password')
+}
+
+// static method to check is password matched
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword)
+}
+
+// static method to check is JWT issued before password changed
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  // check is user password after jwt issued or jwt issued after password change
+  const isTrue =
+    new Date(passwordChangedTimestamp).getTime() / 1000 > jwtIssuedTimestamp
+  return isTrue
+}
+
 userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(
     this.password,
@@ -57,4 +84,4 @@ userSchema.pre('save', async function (next) {
 })
 
 // Create a Mongoose model for the User using the defined schema
-export const UserModel = model<TUser>('User', userSchema)
+export const UserModel = model<TUser, IUserModel>('User', userSchema)

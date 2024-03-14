@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { AcademicDepartmentRoutes } from '../modules/AcademicDepartment/academicDepartment.route'
 import { AcademicSemesterRoutes } from '../modules/AcademicSemester/academicSemester.route'
 import { AdminRoutes } from '../modules/Admin/admin.route'
+import { AuthRoutes } from '../modules/Auth/auth.route'
 import { CourseRoutes } from '../modules/Course/course.route'
 import { FacultyRoutes } from '../modules/Faculty/faculty.route'
 import { OfferedCourseRoutes } from '../modules/OfferedCourse/offeredCourse.route'
@@ -62,6 +63,10 @@ const moduleRoutes: IModuleRoute[] = [
   {
     path: '/offered-courses',
     route: OfferedCourseRoutes,
+  },
+  {
+    path: '/auth',
+    route: AuthRoutes,
   },
 ]
 
