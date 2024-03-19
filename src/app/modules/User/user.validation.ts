@@ -1,5 +1,6 @@
 // Import necessary modules and constants from external files
 import { z } from 'zod'
+import { USER_STATUS } from './user.constant'
 
 // Validation schema for user data
 const userValidationSchema = z.object({
@@ -11,15 +12,15 @@ const userValidationSchema = z.object({
     .optional(),
 })
 
-// // Validation schema for changing user status
-// const changeStatusValidationSchema = z.object({
-//   body: z.object({
-//     status: z.enum([...UserStatus] as [string, ...string[]]),
-//   }),
-// })
+// Validation schema for changing user status
+const updateStatusValidationSchema = z.object({
+  body: z.object({
+    status: z.enum([...Object.values(USER_STATUS)] as [string, ...string[]]),
+  }),
+})
 
 // Export an object containing user-related validation schemas
 export const UserValidation = {
   userValidationSchema,
-  //   changeStatusValidationSchema,
+    updateStatusValidationSchema,
 }

@@ -23,7 +23,7 @@ const adminSchema = new Schema<TAdmin>(
       type: Schema.Types.ObjectId,
       required: [true, 'User id is required'],
       unique: true,
-      ref: 'user',
+      ref: 'User',
     },
     name: { type: nameSchema, required: true },
     gender: { type: String, enum: ['male', 'female'] }, // literal type

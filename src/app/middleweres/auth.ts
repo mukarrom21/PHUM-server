@@ -45,12 +45,12 @@ const auth = (...userRole: TUserRole[]) => {
       )
     }
     // check is password changed after jwt token issued
-    console.log(
-      UserModel.isJWTIssuedBeforePasswordChanged(
-        user.passwordChangedAt as Date,
-        decoded.iat as number,
-      ),
-    )
+    // console.log(
+    //   UserModel.isJWTIssuedBeforePasswordChanged(
+    //     user.passwordChangedAt as Date,
+    //     decoded.iat as number,
+    //   ),
+    // )
     if (
       UserModel.isJWTIssuedBeforePasswordChanged(
         user.passwordChangedAt as Date,

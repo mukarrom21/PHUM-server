@@ -45,8 +45,41 @@ const refreshTokenController = catchAsync(async (req, res) => {
   })
 })
 
+// Controller to generate reset ui link
+const forgotPasswordController = catchAsync(async (req, res) => {
+  // get refresh token from cookies
+  const userId = req.body.id
+  // call refresh token service
+  const result = await AuthServices.forgotPasswordService(userId)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reset Ui link generated successfully',
+    data: result,
+  })
+})
+
+// Controller to for resetting ui link
+const resetPasswordController = catchAsync(async (req, res) => {
+  // get refresh token from cookies
+  const token = req.headers.authorization
+  // call refresh token service
+  const result = await AuthServices.resetPasswordService(
+    req.body,
+    token as string,
+  )
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password reset successfully',
+    data: result,
+  })
+})
+
 export const AuthControllers = {
   loginUserController,
   changePasswordController,
   refreshTokenController,
+  forgotPasswordController,
+  resetPasswordController,
 }

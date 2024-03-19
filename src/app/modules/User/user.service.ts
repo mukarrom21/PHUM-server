@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { UploadApiResponse } from 'cloudinary'
 import httpStatus from 'http-status'
 import mongoose from 'mongoose'
 import config from '../../config'
 import AppError from '../../errors/AppError'
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary'
 import { TAcademicSemester } from '../AcademicSemester/academicSemester.interface'
 import { AcademicSemesterModel } from '../AcademicSemester/academicSemester.model'
 import { TAdmin } from '../Admin/admin.interface'
@@ -21,7 +23,11 @@ import {
 } from './user.utils'
 
 // service to create new student
-const createNewStudentService = async (password: string, payload: TStudent) => {
+const createNewStudentService = async (
+  image: any,
+  password: string,
+  payload: TStudent,
+) => {
   // create user object
   const userData: Partial<TUser> = {}
 
@@ -30,6 +36,9 @@ const createNewStudentService = async (password: string, payload: TStudent) => {
 
   // set student role
   userData.role = USER_ROLE.student
+
+  // set student email
+  userData.email = payload?.email
 
   // To generate student id find academic semester by id for semester year and code
   const academicSemester = await AcademicSemesterModel.findById(
@@ -56,6 +65,17 @@ const createNewStudentService = async (password: string, payload: TStudent) => {
         'Sorry, Failed to create new user!',
       )
     }
+
+    // image name
+    const imageName: string = `${userData.id}-${image.originalname}`
+
+    // send image to cloudinary
+    const imageData = (await sendImageToCloudinary(
+      image.path,
+      imageName,
+    )) as UploadApiResponse
+    // set url into admin collection
+    payload.profileImg = imageData.secure_url
 
     // create a student -> transaction : 2
     // set id, _id as user
@@ -86,15 +106,22 @@ const createNewStudentService = async (password: string, payload: TStudent) => {
 }
 
 // service to create new faculty
-const createNewFacultyService = async (password: string, payload: TFaculty) => {
+const createNewFacultyService = async (
+  image: any,
+  password: string,
+  payload: TFaculty,
+) => {
   // create user object
   const userData: Partial<TUser> = {}
 
   // set given password or default password
   userData.password = password || (config.default_password as string)
 
-  // set student role
+  // set faculty role
   userData.role = USER_ROLE.faculty
+
+  // set faculty email
+  userData.email = payload?.email
 
   // // To generate student id find academic semester by id for semester year and code
   // const academicSemester = await AcademicSemesterModel.findById(
@@ -121,6 +148,17 @@ const createNewFacultyService = async (password: string, payload: TFaculty) => {
         'Sorry, Failed to create new user!',
       )
     }
+
+    // image name
+    const imageName: string = `${userData.id}-${image.originalname}`
+
+    // send image to cloudinary
+    const imageData = (await sendImageToCloudinary(
+      image.path,
+      imageName,
+    )) as UploadApiResponse
+    // set url into admin collection
+    payload.profileImg = imageData.secure_url
 
     // create a Faculty -> transaction : 2
     // set id, _id as user
@@ -151,15 +189,22 @@ const createNewFacultyService = async (password: string, payload: TFaculty) => {
 }
 
 // service to create new Admin
-const createNewAdminService = async (password: string, payload: TAdmin) => {
+const createNewAdminService = async (
+  image: any,
+  password: string,
+  payload: TAdmin,
+) => {
   // create user object
   const userData: Partial<TUser> = {}
 
   // set given password or default password
   userData.password = password || (config.default_password as string)
 
-  // set student role
+  // set admin role
   userData.role = USER_ROLE.admin
+
+  // set admin email
+  userData.email = payload?.email
 
   // --------start transaction and rollback-------
   // start session
@@ -181,6 +226,17 @@ const createNewAdminService = async (password: string, payload: TAdmin) => {
         'Sorry, Failed to create new user!',
       )
     }
+
+    // image name
+    const imageName: string = `${userData.id}-${image.originalname}`
+
+    // send image to cloudinary
+    const imageData = (await sendImageToCloudinary(
+      image.path,
+      imageName,
+    )) as UploadApiResponse
+    // set url into admin collection
+    payload.profileImg = imageData.secure_url
 
     // create a admin -> transaction : 2
     // set id, _id as user
@@ -217,9 +273,35 @@ const findMultipleUsersService = async () => {
 
 const findSingleUserService = async () => {}
 const updateSingleUserService = async () => {}
+
+const updateUserStatusService = async (
+  id: string,
+  payload: { status: string },
+) => {
+  const result = await UserModel.findByIdAndUpdate(id, payload, {
+    new: true,
+  })
+  return result
+}
+
 const deleteSingleUserService = async () => {}
 const updateMultipleUsersService = async () => {}
 const deleteMultipleUsersService = async () => {}
+
+// Get me
+const getMeUsersService = async (id: string, role: string) => {
+  if (role === USER_ROLE.student) {
+    return await StudentModel.findOne({ id }).populate('user')
+  }
+
+  if (role === USER_ROLE.faculty) {
+    return await FacultyModel.findOne({ id }).populate('user')
+  }
+
+  if (role === USER_ROLE.admin) {
+    return await AdminModel.findOne({ id }).populate('user')
+  }
+}
 
 export const UserServices = {
   createNewStudentService,
@@ -228,7 +310,9 @@ export const UserServices = {
   findMultipleUsersService,
   findSingleUserService,
   updateSingleUserService,
+  updateUserStatusService,
   deleteSingleUserService,
   updateMultipleUsersService,
   deleteMultipleUsersService,
+  getMeUsersService,
 }

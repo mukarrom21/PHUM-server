@@ -1,12 +1,18 @@
 import httpStatus from 'http-status'
+import AppError from '../../errors/AppError'
 import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import { UserServices } from './user.service'
 
 // controller to create new student
 const createNewStudentController = catchAsync(async (req, res) => {
+  const image = req.file
   const { password, student } = req.body
-  const result = await UserServices.createNewStudentService(password, student)
+  const result = await UserServices.createNewStudentService(
+    image,
+    password,
+    student,
+  )
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -17,8 +23,13 @@ const createNewStudentController = catchAsync(async (req, res) => {
 
 // controller to create new faculty
 const createNewFacultyController = catchAsync(async (req, res) => {
+  const image = req.file
   const { password, faculty } = req.body
-  const result = await UserServices.createNewFacultyService(password, faculty)
+  const result = await UserServices.createNewFacultyService(
+    image,
+    password,
+    faculty,
+  )
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -29,8 +40,14 @@ const createNewFacultyController = catchAsync(async (req, res) => {
 
 // controller to create new admin
 const createNewAdminController = catchAsync(async (req, res) => {
+  const image = req.file
+  // console.log(req.file)
   const { password, admin } = req.body
-  const result = await UserServices.createNewAdminService(password, admin)
+  const result = await UserServices.createNewAdminService(
+    image,
+    password,
+    admin,
+  )
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -69,6 +86,23 @@ const updateSingleUserController = catchAsync(async (req, res) => {
   })
 })
 
+// controller to update user status
+const updateUserStatusController = catchAsync(async (req, res) => {
+  const result = await UserServices.updateUserStatusService(
+    req.params.id,
+    req.body,
+  )
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Sorry, user not found')
+  }
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'User status updated successfully',
+    data: result,
+  })
+})
+
 const deleteSingleUserController = catchAsync(async (req, res) => {
   const result = await UserServices.deleteSingleUserService()
   sendResponse(res, {
@@ -99,6 +133,18 @@ const updateMultipleUsersController = catchAsync(async (req, res) => {
   })
 })
 
+// get me controller
+const getMeController = catchAsync(async (req, res) => {
+  const { id, role } = req.user
+  const result = await UserServices.getMeUsersService(id, role)
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Profile data retrieved successfully',
+    data: result,
+  })
+})
+
 export const UserControllers = {
   createNewStudentController,
   createNewFacultyController,
@@ -106,7 +152,9 @@ export const UserControllers = {
   getMultipleUsersController,
   getSingleUserController,
   updateSingleUserController,
+  updateUserStatusController,
   deleteSingleUserController,
   deleteMultipleUsersController,
   updateMultipleUsersController,
+  getMeController,
 }

@@ -16,11 +16,7 @@ const nameSchema = z.object({
 // Define schema for student
 const createAdminValidationSchema = z.object({
   body: z.object({
-    student: z.object({
-      id: z.string({
-        required_error: 'Student ID is required',
-        invalid_type_error: 'Student ID must be a string',
-      }),
+    admin: z.object({
       name: nameSchema,
       gender: z.enum(['male', 'female']),
       dateOfBirth: z.string({

@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 export type TUserRole = 'admin' | 'student' | 'faculty'
 export type TUser = {
   id: string
+  email: string
   password: string
   needsPasswordChange: boolean
   passwordChangedAt?: Date
