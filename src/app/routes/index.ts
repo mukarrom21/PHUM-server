@@ -4,7 +4,9 @@ import { AcademicDepartmentRoutes } from '../modules/AcademicDepartment/academic
 import { AcademicSemesterRoutes } from '../modules/AcademicSemester/academicSemester.route'
 import { AdminRoutes } from '../modules/Admin/admin.route'
 import { AuthRoutes } from '../modules/Auth/auth.route'
+import { BypassRoutes } from '../modules/Bypass/bypass.route'
 import { CourseRoutes } from '../modules/Course/course.route'
+import { EnrolledCourseRoutes } from '../modules/EnrolledCourse/enrolledCourse.route'
 import { FacultyRoutes } from '../modules/Faculty/faculty.route'
 import { OfferedCourseRoutes } from '../modules/OfferedCourse/offeredCourse.route'
 import { SemesterRegistrationRoutes } from '../modules/SemesterRegistration/semesterRegistration.route'
@@ -65,8 +67,16 @@ const moduleRoutes: IModuleRoute[] = [
     route: OfferedCourseRoutes,
   },
   {
+    path: '/enrolled-courses',
+    route: EnrolledCourseRoutes,
+  },
+  {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/bypass',
+    route: BypassRoutes,
   },
 ]
 

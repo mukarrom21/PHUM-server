@@ -20,8 +20,9 @@ const getAllAdminsService = async (query: Record<string, unknown>) => {
 
   // use modelQuery and resolve
   const result = await AdminQuery.modelQuery
+  const meta = await AdminQuery.countTotal()
 
-  return result
+  return { meta, result }
 }
 //-- service to get single admin by admin-id
 const getSingleAdminService = async (id: string) => {

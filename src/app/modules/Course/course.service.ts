@@ -18,7 +18,7 @@ const findAllCoursesService = async (query: Record<string, unknown>) => {
     CourseModel.find().populate('preRequisiteCourses.course'),
     query,
   )
-    .search(['title', 'prefix', 'code'])
+    .search(['title', 'prefix']) // code is number and number don't match partial. it is match exact
     .filter()
     .sort()
     .paginate()

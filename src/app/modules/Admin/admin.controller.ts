@@ -7,7 +7,7 @@ import { AdminServices } from './admin.service'
 
 const getAllAdminsController = catchAsync(
   async (req: Request, res: Response) => {
-    console.log(req.cookies)
+    // console.log(req.cookies)
     // get query
     const query = req.query
     const result = await AdminServices.getAllAdminsService(query)
