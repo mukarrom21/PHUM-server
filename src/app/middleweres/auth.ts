@@ -5,6 +5,7 @@ import AppError from '../errors/AppError'
 import { TUserRole } from '../modules/User/user.interface'
 import { UserModel } from '../modules/User/user.model'
 import catchAsync from '../utils/catchAsync'
+import { verifyToken } from '../utils/verifyJWT'
 
 const auth = (...userRole: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {
@@ -16,10 +17,11 @@ const auth = (...userRole: TUserRole[]) => {
     }
 
     // check is the token valid (verify)
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
+    // const decoded = jwt.verify(
+    //   token,
+    //   config.jwt_access_secret as string,
+    // ) as JwtPayload
+    const decoded = await verifyToken(token, config.jwt_access_secret as string)
 
     // const user = await UserModel.findOne({ id: payload?.id }).select('+password')
     const user = await UserModel.isUserExists(decoded.id)
